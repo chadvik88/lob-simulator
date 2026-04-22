@@ -3,13 +3,13 @@
 
 ![Dashboard](assets/dashboard.png)
 
-> A full-stack, agent-based market microstructure simulator built from scratch — featuring a price-time priority matching engine, three classes of market participants, real-time analytics, and a live Bloomberg-style terminal dashboard. Simulates 50,000+ trades across 1800 seconds of market time, streaming data live to the UI.
+> A full-stack, agent-based market microstructure simulator built from scratch, featuring a price-time priority matching engine, three classes of market participants, real-time analytics, and a live Batman x Bloomberg-style terminal dashboard. Simulates 50,000+ trades across 1800 seconds of market time, streaming data live to the UI.
 
 ## What is a Limit Order Book?
 
-A limit order book (LOB) is the core data structure of every modern financial exchange — from NASDAQ to Binance. It maintains a real-time record of all outstanding buy (bid) and sell (ask) orders, matching them by price-time priority when they cross. Every trade you've ever seen on a chart was the result of a matching engine exactly like the one in this project.
+A limit order book (LOB) is the core data structure of every modern financial exchange including that of NASDAQ and Binance. It maintains a real-time record of all outstanding buy (bid) and sell (ask) orders, matching them by price-time priority when they cross. Every trade you've ever seen on a chart was the result of a matching engine exactly like the one in this project.
 
-Understanding the LOB is the foundation of market microstructure — the study of how prices are formed, how liquidity is provided, and how information gets incorporated into asset prices. This project implements that theory from the ground up, not as an abstraction, but as working code.
+Understanding the LOB is the foundation of market microstructure. Here, microstructure is the study of how prices are formed, how liquidity is provided, and how information gets incorporated into asset prices. This project implements that theory from the ground up, through a working code and framework.
 
 ## Demo
 
@@ -35,17 +35,17 @@ lob-simulator/
 └── requirements.txt
 ```
 
-**Four layers, built bottom-up:**
+**The Main Four layers (built from the bottom-up, ofc):**
 
-**Layer 1 — Engine** (`book.py`): The matching engine. Price-time priority. Limit orders, market orders, IOC, FOK, GTC. Partial fills. Lazy cancellation. O(log n) insertion via `SortedDict`. 16 unit tests covering every edge case.
+**Layer 1 — Engine* (`book.py`): The first layer is made up of the matching engine, which includes the price-time priority, limit orders, market orders, and other things like IOC, FOK, GTC. It also has partial fills and lazy cancellation. O(log n) insertion via `SortedDict` has also been inculcated, alongside 16 unit tests covering every possible edge case.
 
-**Layer 2 — Simulation** (`agents.py`, `simulation.py`): Three agent classes operating on Poisson arrival processes via SimPy. Market makers use inventory-skewed quoting (Avellaneda-Stoikov). Informed traders carry a decaying private signal (Glosten-Milgrom). A thread-safe `StreamingBuffer` streams data to the dashboard in real time.
+*Layer 2 — Simulation* (`agents.py`, `simulation.py`): I've leveraged three agent classes operating on Poisson arrival processes via SimPy. The market makers use inventory-skewed quoting (Avellaneda-Stoikov) and the informed traders carry a decaying private signal (Glosten-Milgrom). A thread-safe `StreamingBuffer` streams data to the dashboard in real time.
 
-**Layer 3 — Analytics** (`metrics.py`): Bid-ask spread dynamics, Order Flow Imbalance (Cont-Kukanov-Stoikov 2013), price impact curve with power-law fitting, VWAP, rolling realized volatility, market quality composite score.
+*Layer 3 — Analytics* (`metrics.py`): This has the Bid-ask spread dynamics, Order Flow Imbalance (Cont-Kukanov-Stoikov 2013), price impact curve with power-law fitting, VWAP, rolling realized volatility, and the market quality composite score.
 
-**Layer 4 — Dashboard** (`app.py`): Live-streaming Plotly Dash terminal. 10 panels updating every 600ms while the simulation runs. Gold/black Bloomberg aesthetic with corner-bracket panel styling and scanline CSS overlay.
+*Layer 4 — Dashboard* (`app.py`): It's literally a live-streaming Plotly Dash terminal. 10 panels update every 600ms while the simulation runs with Gold/black Batman-Bloomberg-ish aesthetic, corner-bracket panel styling, and scanline CSS overlay.
 
-## Run It Locally
+## Run It Locally!
 
 ```bash
 git clone https://github.com/chadvik88/lob-simulator.git
@@ -54,7 +54,7 @@ pip install -r requirements.txt
 python dashboard/app.py
 ```
 
-Open `http://127.0.0.1:8050`, set your parameters, and click **▶ EXECUTE**.
+Open `http://127.0.0.1:8050`, set your parameters, and click **EXECUTE**.
 
 ## Dashboard Panels
 
@@ -76,13 +76,13 @@ Open `http://127.0.0.1:8050`, set your parameters, and click **▶ EXECUTE**.
 This project implements three foundational models from market microstructure literature:
 
 ### Glosten-Milgrom (1985)
-The baseline model of informed trading. Dealers set bid-ask spreads to break even against informed traders who know the true asset value. In this simulator, `InformedTrader` agents carry a private signal with Gaussian noise that decays at rate `signal_decay` — as the signal fades, they stop trading, consistent with the GM prediction that informed edge is temporary.
+The baseline model of informed trading. Dealers set bid-ask spreads to break even against informed traders who know the true asset value. In this simulator, `InformedTrader` agents carry a private signal with Gaussian noise that decays at rate `signal_decay`, i.e., as the signal fades, they stop trading, consistent with the GM prediction that informed edge is temporary.
 
 ### Avellaneda-Stoikov Market Making
 `MarketMaker` agents skew their quotes based on current inventory. When long, they lower both bid and ask to encourage selling and reduce inventory risk. The skew is linear in inventory: `quote = mid ± (spread/2) - skew_factor × inventory`. This prevents the market maker from accumulating infinite inventory and blowing up.
 
 ### Cont, Kukanov & Stoikov — Order Flow Imbalance (2013)
-OFI measures the net pressure at the best quotes: `OFI = Δbid_depth - Δask_depth`. Empirically, OFI is one of the strongest short-term predictors of price movement — the paper shows R² values above 0.9 at sub-second horizons. This simulator computes OFI from snapshot deltas and displays its correlation with mid-price returns.
+OFI measures the net pressure at the best quotes: `OFI = Δbid_depth - Δask_depth`. Empirically, OFI is one of the strongest short-term predictors of price movement, plus the paper shows R² values above 0.9 at sub-second horizons. This simulator computes OFI from snapshot deltas and displays its correlation with mid-price returns.
 
 ## Key Results (1800s simulation, default parameters)
 
@@ -94,7 +94,7 @@ OFI measures the net pressure at the best quotes: `OFI = Δbid_depth - Δask_dep
 | OFI-return correlation | −0.05 to −0.40 |
 | Market quality score | 70–95 / 100 |
 
-Price follows a random walk with realistic spread clustering and volatility regimes. Informed traders move price in their signal direction. Market makers absorb flow and earn the spread minus adverse selection costs. Noise traders lose money on average — consistent with theory.
+The price follows a random walk with realistic spread clustering and volatility regimes. Informed traders move price in their signal direction. Market makers absorb flow and earn the spread minus adverse selection costs. Noise traders lose money on average, which is pretty consistent with the theory.
 
 ## Tests
 
@@ -106,7 +106,7 @@ pytest tests/test_book.py -v
 
 All 16 pass.
 
-## Future Work
+## Future Additions
 
 - **Scenario presets** — one-click Flash Crash, High Volatility, Thin Market configurations
 - **Replay mode** — record a simulation and step through it frame by frame
@@ -129,4 +129,4 @@ All 16 pass.
 
 `Python 3.13` · `SimPy` · `sortedcontainers` · `NumPy` · `pandas` · `SciPy` · `Plotly Dash` · `dash-bootstrap-components`
 
-*Built by [@chadvik88](https://github.com/chadvik88) — incoming freshman, built this the summer before college.*
+*Built by [@chadvik88](https://github.com/chadvik88) — incoming freshman.*
