@@ -37,7 +37,7 @@ lob-simulator/
 
 **The Main Four layers (built from the bottom-up, ofc):**
 
-**Layer 1 — Engine* (`book.py`): The first layer is made up of the matching engine, which includes the price-time priority, limit orders, market orders, and other things like IOC, FOK, GTC. It also has partial fills and lazy cancellation. O(log n) insertion via `SortedDict` has also been inculcated, alongside 16 unit tests covering every possible edge case.
+*Layer 1 — Engine* (`book.py`): The first layer is made up of the matching engine, which includes the price-time priority, limit orders, market orders, and other things like IOC, FOK, GTC. It also has partial fills and lazy cancellation. O(log n) insertion via `SortedDict` has also been inculcated, alongside 16 unit tests covering every possible edge case.
 
 *Layer 2 — Simulation* (`agents.py`, `simulation.py`): I've leveraged three agent classes operating on Poisson arrival processes via SimPy. The market makers use inventory-skewed quoting (Avellaneda-Stoikov) and the informed traders carry a decaying private signal (Glosten-Milgrom). A thread-safe `StreamingBuffer` streams data to the dashboard in real time.
 
